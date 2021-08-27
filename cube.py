@@ -25,10 +25,10 @@ class cube:
         
         self.options =[
         {'label':"Start / Stop",'callback': 'self.startStop()' },
-        {'label':'Up', 'callback': 'self.rotateX3D(-0.01)'},
-        {'label':'Down', 'callback': 'self.rotateX3D(0.01)'},
-        {'label':'Left', 'callback': 'self.rotateY3D(0.01)'},
-        {'label':'Right', 'callback': 'self.rotateY3D(-0.01)'},
+        {'label':'Up', 'callback': 'self.rotateX3D(0.01)'},
+        {'label':'Down', 'callback': 'self.rotateX3D(-0.01)'},
+        {'label':'Left', 'callback': 'self.rotateY3D(-0.01)'},
+        {'label':'Right', 'callback': 'self.rotateY3D(0.01)'},
         {'label':'Zoom In', 'callback': 'self.zoom(1.01)'},
         {'label':'Zoom Out', 'callback': 'self.zoom(0.99)'}
         ]
@@ -91,9 +91,9 @@ class cube:
         self.clickStart =[]
         self.clickFinish=[]
         
-        #self.rotateX3D(10)
-        #self.rotateY3D(10)
-        #self.rotateZ3D(10)
+        self.rotateX3D(10)
+        self.rotateY3D(10)
+        self.rotateZ3D(10)
         
         self.mainLoop()
         
@@ -144,9 +144,9 @@ class cube:
                 elif (event.key == pygame.K_DOWN):
                     self.rotateX3D(-0.01)
                 elif (event.key == pygame.K_LEFT):
-                    self.rotateY3D(0.01)
-                elif (event.key == pygame.K_RIGHT):
                     self.rotateY3D(-0.01)
+                elif (event.key == pygame.K_RIGHT):
+                    self.rotateY3D(0.01)
                 elif (event.key == pygame.K_EQUALS):
                     self.zoom(1.01)
                 elif (event.key == pygame.K_MINUS):
@@ -224,13 +224,23 @@ class cube:
             top = self.menuTop+(self.optionHeight+self.optionSpacer)*i
             pygame.draw.rect(self.screen, self.optionColour, [self.menuLeft, top, self.optionWidth, self.optionHeight])
             self.drawLabel ([self.menuLeft+5,top+10],self.options[i]['label'],28)
+
+    def drawSurfaces (self):
+        for i in range(0, self.surfaceLen, 1):   
+            self.drawFace(
+            [
+            self.surfaces[i][0],
+            self.surfaces[i][1],
+            self.surfaces[i][2],
+            self.surfaces[i][3]
+            ],
+            (0,0,20)
+            )
               
     def drawFaces(self):
         surfaceTotals ={}
-        print ("\n")
         for i in range(0, self.surfaceLen, 1):
-            surfaceTotals[i]= self.sumNodes (i)  
-            print (surfaceTotals[i])
+            surfaceTotals[i]= self.sumNodes (i)     
         surfaceTotals ={k:v for k, v in sorted(surfaceTotals.items(),key=lambda item:item[1])} 
         i=0           
         for key, value in surfaceTotals.items():
@@ -249,7 +259,6 @@ class cube:
         total = 0
         tmp =[]
         for i in range(0, 4, 1):
-            #print  (self.nodes[self.surfaces[surface][i]][2])
             tmp.append(self.nodes[self.surfaces[surface][i]][2])
         return min(tmp)
         
@@ -294,8 +303,6 @@ class cube:
     def drawLabel (self,cords,message,fontsize):
         font = pygame.font.SysFont(None, fontsize)
         text = font.render(message, True, self.labelColour)
-        
-        #textRect.center = (cords[0], cords[1])
         self.screen.blit(text,(cords[0], cords[1]))
                         
 if __name__ == "__main__":

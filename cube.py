@@ -23,6 +23,14 @@ class cube:
         self.nodeSize = 4.5
         self.fillColour=(0,0,50)
         
+        self.drawBools ={
+            'drawLabels' : True,
+            'drawNodes' : True,
+            'drawEdges' : True,
+            'drawFaces' : True,
+            'drawCords' : True
+            } 
+        
         self.options =[
         {'label':"Start / Stop",'callback': 'self.startStop()' },
         {'label':'Up', 'callback': 'self.rotateX3D(0.01)'},
@@ -30,13 +38,20 @@ class cube:
         {'label':'Left', 'callback': 'self.rotateY3D(-0.01)'},
         {'label':'Right', 'callback': 'self.rotateY3D(0.01)'},
         {'label':'Zoom In', 'callback': 'self.zoom(1.01)'},
-        {'label':'Zoom Out', 'callback': 'self.zoom(0.99)'}
+        {'label':'Zoom Out', 'callback': 'self.zoom(0.99)'},
+        {'label':'Draw Labels','callback':"self.toggleVar('drawLabels')"},
+        {'label':'Draw Nodes','callback':"self.toggleVar('drawNodes')"},
+        {'label':'Draw Edges','callback':"self.toggleVar('drawEdges')"},
+        {'label':'Draw Faces','callback':"self.toggleVar('drawFaces')"},
+        {'label':'Draw Coordinates','callback':"self.toggleVar('drawCords')"}
         ]
+        
+   
         
         self.optionsLen = len(self.options)
         self.optionColour = (100,100,100)
         self.optionHeight = 40
-        self.optionWidth =160
+        self.optionWidth =200
         self.optionSpacer=1
         self.menuHeight = self.optionsLen * self.optionHeight + self.optionSpacer
         self.menuWidth = self.optionWidth
@@ -161,7 +176,8 @@ class cube:
                 self.rotateX3D(-((y-self.clickStart[1])/10000));      
                 self.rotateY3D((x-self.clickStart[0])/10000);
                 self.doOrDoNot()
-
+    def toggleVar (self, whichVar):
+        self.drawBools[whichVar] = not self.drawBools[whichVar]  
     def startStop (self):
         if (self.animate==False):
             self.animate=True
@@ -206,12 +222,17 @@ class cube:
 
     def drawCube(self):
         self.screen.fill(self.backgroundColour)
-        self.drawFaces()
-        self.drawEdges()    
-        self.drawNodes()
-        self.drawLabels()
-        self.drawMenu ()
-        self.drawCords ()                   
+        if (self.drawBools['drawFaces']):
+            self.drawFaces()
+        if (self.drawBools['drawEdges']):
+            self.drawEdges()
+        if (self.drawBools['drawNodes']):
+            self.drawNodes()
+        if (self.drawBools['drawLabels']):
+            self.drawLabels()
+        if (self.drawBools['drawCords']):
+            self.drawCords ()          
+        self.drawMenu ()                         
         pygame.display.flip()
   
     def drawCords(self):

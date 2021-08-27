@@ -207,9 +207,9 @@ class cube:
     def drawCube(self):
         self.screen.fill(self.backgroundColour)
         self.drawFaces()
-        #self.drawEdges()    
-        #self.drawNodes()
-        #self.drawLabels()
+        self.drawEdges()    
+        self.drawNodes()
+        self.drawLabels()
         self.drawMenu ()
         self.drawCords ()                   
         pygame.display.flip()
@@ -224,18 +224,6 @@ class cube:
             top = self.menuTop+(self.optionHeight+self.optionSpacer)*i
             pygame.draw.rect(self.screen, self.optionColour, [self.menuLeft, top, self.optionWidth, self.optionHeight])
             self.drawLabel ([self.menuLeft+5,top+10],self.options[i]['label'],28)
-
-    def drawSurfaces (self):
-        for i in range(0, self.surfaceLen, 1):   
-            self.drawFace(
-            [
-            self.surfaces[i][0],
-            self.surfaces[i][1],
-            self.surfaces[i][2],
-            self.surfaces[i][3]
-            ],
-            (0,0,20)
-            )
               
     def drawFaces(self):
         surfaceTotals ={}

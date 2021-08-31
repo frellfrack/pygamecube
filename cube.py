@@ -3,9 +3,19 @@ import pygame
 from math import pi,sin,cos
 from time import sleep
 
+
 # Why didn't I pay attention in maths at schooooooollllll?
 
 class cube:
+
+    NODESPOS =  [
+                [[-150, 150, 150], [-150, -150, 150], [150, 150, 150], [150, -150, 150], [-150, 150, -150], [-150, -150, -150], [150, 150, -150], [150, -150, -150]],   
+                [[150, 150, 150], [150, -150, 150], [150, 150, -150], [150, -150, -150], [-150, 150, 150], [-150, -150, 150], [-150, 150, -150], [-150, -150, -150]],
+                [[-150, 150, -150], [-150, 150, 150], [150, 150, -150], [150, 150, 150], [-150, -150, -150], [-150, -150, 150], [150, -150, -150], [150, -150, 150]],
+                [[-150, -150, 150], [-150, -150, -150], [150, -150, 150], [150, -150, -150], [-150, 150, 150], [-150, 150, -150], [150, 150, 150], [150, 150, -150]],
+                [[-150, 150, -150], [-150, -150, -150], [-150, 150, 150], [-150, -150, 150], [150, 150, -150], [150, -150, -150], [150, 150, 150], [150, -150, 150]],
+                [[150, 150, -150], [150, -150, -150], [-150, 150, -150], [-150, -150, -150], [150, 150, 150], [150, -150, 150], [-150, 150, 150], [-150, -150, 150]]
+                ]
     def __init__(self):
         pygame.init()
         self.width=1024
@@ -28,7 +38,9 @@ class cube:
             'drawNodes' : True,
             'drawEdges' : True,
             'drawFaces' : True,
-            'drawCords' : True
+            'drawCords' : True,
+            'drawGraph' : True,
+            'drawMenu'  : True
             } 
         
         self.options =[
@@ -60,18 +72,11 @@ class cube:
         self.menuBottom = self.menuTop + self.menuHeight
         self.menuRight = self.menuLeft+self.menuWidth
         
-        #coordinates for corners of cube in x,y,z relative to zero  
-        self.nodes= [
-        [-150, -150, -150],
-        [-150, -150,  150],
-        [-150,  150, -150],
-        [-150,  150,  150],
-        [ 150, -150, -150],
-        [ 150, -150,  150],
-        [ 150,  150, -150],
-        [ 150,  150,  150]
-        ]
-        self.nodLen = len(self.nodes)
+        #coordinates for corners of cube in x,y,z relative to zero 
+        self.nodes = []
+        self.nodLen = 8
+        for i in range(0, self.nodLen, 1):
+            self.nodes.append(list.copy(self.NODESPOS[0][i]))
        
         self.edges= [
         [0, 1],
@@ -96,7 +101,15 @@ class cube:
         [0,4,6,2,(100,0,150)],
         [2,3,7,6,(50,0,200)],
         [6,4,5,7,(0,0,255)]
-        ]        
+        ]
+        
+        self.graphPoints =[
+        [0, 0, -150],
+        [0, 0, -150]
+        ]
+        
+        self.graphPointsLen = len(self.graphPoints)
+                
         self.surfaceLen = len(self.surfaces)        
 
 
@@ -105,11 +118,7 @@ class cube:
         self.mouseDown = False
         self.clickStart =[]
         self.clickFinish=[]
-        
-        self.rotateX3D(10)
-        self.rotateY3D(10)
-        self.rotateZ3D(10)
-        
+     
         self.mainLoop()
         
     def mainLoop(self):
@@ -169,13 +178,46 @@ class cube:
                 elif (event.key == pygame.K_SPACE):
                     self.startStop()
                 elif (event.key == pygame.K_q):
-                    self.done=True  
+                    self.done=True
+                elif (event.key == pygame.K_n):
+                    self.toggleVar('drawNodes') 
+                elif (event.key == pygame.K_l):
+                    self.toggleVar('drawLabels')
+                elif (event.key == pygame.K_e):
+                    self.toggleVar('drawEdges')  
+                elif (event.key == pygame.K_c):
+                    self.toggleVar('drawCords')
+                elif (event.key == pygame.K_f):
+                    self.toggleVar('drawFaces')
+                elif (event.key == pygame.K_m):
+                    self.toggleVar('drawMenu')
+                elif (event.key == pygame.K_p):
+                    self.dumpNodes()
+                elif (event.key == pygame.K_1):
+                    self.setOrientation(0)
+                elif (event.key == pygame.K_2):
+                    self.setOrientation(1)
+                elif (event.key == pygame.K_3):
+                    self.setOrientation(2)
+                elif (event.key == pygame.K_4):
+                    self.setOrientation(3)
+                elif (event.key == pygame.K_5):
+                    self.setOrientation(4)
+                elif (event.key == pygame.K_6):
+                    self.setOrientation(5)
                 self.doOrDoNot()  
             if (self.mouseDown==True):
                 x,y = pygame.mouse.get_pos()
                 self.rotateX3D(-((y-self.clickStart[1])/10000));      
                 self.rotateY3D((x-self.clickStart[0])/10000);
                 self.doOrDoNot()
+    def setOrientation (self,face):
+        for i in range(0, self.nodLen, 1):
+            self.nodes[i]=list.copy(self.NODESPOS[face][i])
+   
+    def dumpNodes(self):
+        print(self.nodes) 
+                
     def toggleVar (self, whichVar):
         self.drawBools[whichVar] = not self.drawBools[whichVar]  
     def startStop (self):
@@ -231,10 +273,20 @@ class cube:
         if (self.drawBools['drawLabels']):
             self.drawLabels()
         if (self.drawBools['drawCords']):
-            self.drawCords ()          
-        self.drawMenu ()                         
+            self.drawCords () 
+        if (self.drawBools['drawGraph']):
+            self.drawGraph ()          
+        if (self.drawBools['drawMenu']):
+            self.drawMenu ()             
         pygame.display.flip()
   
+    def drawGraph(self):
+        for i in range(0, self.graphPointsLen, 1):
+            cords = [
+            [0,0],
+            [self.graphPoints[i][0],self.graphPoints[i][1]]
+            ]
+            
     def drawCords(self):
         for i in range(0, self.nodLen, 1):
             message = "Node:%i [%.2f,%.2f,%.2f]" % (i, self.nodes[i][0],self.nodes[i][1],self.nodes[i][2])
@@ -327,4 +379,4 @@ class cube:
         self.screen.blit(text,(cords[0], cords[1]))
                         
 if __name__ == "__main__":
-    tmp =  cube()
+    cbe =  cube()
